@@ -33,7 +33,7 @@ public class InventoryUI : MonoBehaviour
         int idx = 0;
         foreach (var item in myInven.items)
         {
-            #region ½½·Ô ¾ÆÀÌÅÛ ÀÎ½ºÅÏ½º »ý¼º ¹× ¼³Á¤
+            #region ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             var go = Instantiate(SlotItem, SlotItems[idx].transform);
             go.transform.localPosition = Vector3.zero;
             SlotItemPrefab slotItem = go.GetComponent<SlotItemPrefab>();

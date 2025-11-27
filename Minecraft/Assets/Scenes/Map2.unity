@@ -1202,6 +1202,125 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1394273801}
   m_CullTransparentMesh: 1
+--- !u!1 &1434239642
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1434239647}
+  - component: {fileID: 1434239646}
+  - component: {fileID: 1434239645}
+  - component: {fileID: 1434239644}
+  - component: {fileID: 1434239643}
+  m_Layer: 0
+  m_Name: Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1434239643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1434239642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a848b57a7a793174baa6c66414085433, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nextSceneName: Map1 2
+--- !u!65 &1434239644
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1434239642}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1434239645
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1434239642}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1434239646
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1434239642}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1434239647
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1434239642}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 18, y: 5, z: 18}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1512576033
 GameObject:
   m_ObjectHideFlags: 0
@@ -1231,17 +1350,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18e8f036a5ea02c42a8fb5bd15127816, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blockPrefabDirt: {fileID: 4956983994899401295, guid: 3d0deec815af5f14b92b473342e521b1,
+  blockPrefabDirt: {fileID: 4956983994899401295, guid: 1ddfeefcdf575e742a95eaa336732b12,
     type: 3}
-  blockPrefabGrass: {fileID: 4956983994899401295, guid: ce3bcc7fc0a99424a92abaa03e0b9dfa,
+  blockPrefabGrass: {fileID: 4956983994899401295, guid: 1ddfeefcdf575e742a95eaa336732b12,
     type: 3}
   blockPrefabWater: {fileID: 4956983994899401295, guid: 90148b7c1f9404b4d9bef6cb1ae5e030,
     type: 3}
+  blockPrefabStone: {fileID: 4956983994899401295, guid: 55cc2ffe9f321424cb92c5837cc9d341,
+    type: 3}
+  blockPrefabCoal: {fileID: 4956983994899401295, guid: 671a1fcc42fa29b4880856e2b83fff55,
+    type: 3}
+  blockPrefabIron: {fileID: 4956983994899401295, guid: 884bd27df232da7499c06db5835e738f,
+    type: 3}
+  blockPrefabWood: {fileID: 4956983994899401295, guid: e3bbf89f27cde4b4c99f71537d0b132e,
+    type: 3}
+  blockPrefabLeaf: {fileID: 4956983994899401295, guid: 402e9a797606d7941ae949633f190176,
+    type: 3}
   width: 20
   depth: 20
-  maxHeight: 16
-  waterLevel: 4
-  noiseScale: 20
+  maxHeight: 20
+  waterLevel: 0
+  noiseScale: 8
+  treeProbability: 0.01
 --- !u!4 &1512576035
 Transform:
   m_ObjectHideFlags: 0
@@ -1898,3 +2028,4 @@ SceneRoots:
   - {fileID: 1902195046}
   - {fileID: 732959801}
   - {fileID: 1519202452}
+  - {fileID: 1434239647}
