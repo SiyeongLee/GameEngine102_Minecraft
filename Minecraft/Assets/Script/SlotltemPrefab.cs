@@ -9,6 +9,7 @@ public class SlotItemPrefab : MonoBehaviour, IPointerClickHandler
     public TextMeshProUGUI itemText;
     public ItemType blockType;
     public CraftingPanel craftingPanel;
+    private GameObject player;
 
     public void ItemSetting(Sprite itemSprite, string txt, ItemType type)
     {
@@ -21,6 +22,17 @@ public class SlotItemPrefab : MonoBehaviour, IPointerClickHandler
     {
         if (!craftingPanel)
             craftingPanel = FindObjectOfType<CraftingPanel>(true);
+        player = GameObject.FindWithTag("Player");
+
+
+    }
+
+    private void Start()
+    {
+        if (blockType == ItemType.Axe)
+        {
+            player.GetComponent<PlayerHarvester>().toolDamage = 2;
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)

@@ -8,7 +8,7 @@ public enum ItemType
 {
     Dirt, Grass, Water,
     Wood, Leaf, Stone, Coal, Iron,
-    axe
+    Axe
 }
 
 public class Block : MonoBehaviour

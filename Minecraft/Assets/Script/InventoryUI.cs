@@ -15,7 +15,7 @@ public class InventoryUI : MonoBehaviour
     public Sprite StoneSprite;
     public Sprite CoalSprite;
     public Sprite IronSprite;
-    public Sprite axeSprite;
+    public Sprite AxeSprite;
    
     #endregion
 
@@ -69,8 +69,8 @@ public class InventoryUI : MonoBehaviour
                 case ItemType.Coal:
                     slotItem.ItemSetting(CoalSprite, "x" + item.Value.ToString(), item.Key);
                     break;
-                case ItemType.axe:
-                    slotItem.ItemSetting(axeSprite, "x" + item.Value.ToString(), item.Key);
+                case ItemType.Axe:
+                    slotItem.ItemSetting(AxeSprite, "x" + item.Value.ToString(), item.Key);
                     break;
             }
             idx++;
