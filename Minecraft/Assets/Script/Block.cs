@@ -4,17 +4,17 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 
-public enum BlockType
+public enum ItemType
 {
     Dirt, Grass, Water,
     Wood, Leaf, Stone, Coal, Iron,
-    Pickaxe, Weapon
+    axe
 }
 
 public class Block : MonoBehaviour
 {
     [Header("Block Stat")]
-    public BlockType type = BlockType.Dirt;
+    public ItemType type = ItemType.Dirt;
 
     public int maxHP = 3;
 

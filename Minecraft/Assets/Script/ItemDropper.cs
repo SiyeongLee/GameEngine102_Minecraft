@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public struct ItemDropData
 {
-    public BlockType type;
+    public ItemType type;
     public GameObject prefab;
 }
 
@@ -45,7 +45,7 @@ public class ItemDropper : MonoBehaviour
         // 1. 현재 선택된 아이템 확인 (인벤토리 UI가 없거나 선택 안 했으면 리턴)
         if (inventoryUI == null || inventoryUI.selectedIndex < 0) return;
 
-        BlockType currentType = inventoryUI.GetInventorySlot();
+        ItemType currentType = inventoryUI.GetInventorySlot();
 
         // 2. 인벤토리에서 아이템 1개 감소 시도
         if (inventory.Consume(currentType, 1))
@@ -84,7 +84,7 @@ public class ItemDropper : MonoBehaviour
     }
 
     // 리스트에서 타입에 맞는 프리팹 찾기
-    GameObject GetPrefabByType(BlockType type)
+    GameObject GetPrefabByType(ItemType type)
     {
         foreach (var data in dropList)
         {
