@@ -143,8 +143,9 @@ public class NoiseVoxelMap : MonoBehaviour
     void CreateBlock(int x, int y, int z, GameObject prefab, ItemType type)
     {
         if (prefab == null) return;
-        // 맵 범위 체크
-        if (x < 0 || x >= width || z < 0 || z >= depth) return;
+
+        // 맵 범위 체크 코드 삭제 또는 주석 처리 (//)
+        // if (x < 0 || x >= width || z < 0 || z >= depth) return;
 
         var go = Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity, transform);
         go.name = $"{type}_{x}_{y}_{z}";

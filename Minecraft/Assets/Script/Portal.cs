@@ -11,7 +11,7 @@ public class Portal : MonoBehaviour
     void Update()
     {
         // 플레이어가 포탈 범위 안에 있고 + 'E' 키를 눌렀을 때
-        if (isPlayerInPortal && Input.GetKeyDown(KeyCode.E))
+        if (isPlayerInPortal && Input.GetKeyDown(KeyCode.F))
         {
             Debug.Log($"[Portal] {nextSceneName} 씬으로 이동합니다.");
             SceneManager.LoadScene(nextSceneName);
