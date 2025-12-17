@@ -1,40 +1,54 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement; // ¾À Àç½ÃÀÛÀ» À§ÇØ ÇÊ¿ä
+using UnityEngine.SceneManagement;
 
 public class PlayerControoller : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
-    public float sneakSpeed = 2.5f; // ¿õÅ©¸®±â ¼Óµµ (º¸Åë Àı¹İ)
+    public float sneakSpeed = 2.5f; // ì›…í¬ë¦¬ê¸° ì†ë„
     public float jumpPower = 5f;
     public float gravity = -9.81f;
 
     [Header("Mouse Settings")]
     public float mouseSensitivity = 3f;
 
-    [Header("Fall Settings")]
-    public float fallThreshold = -30f; // ÀÌ ³ôÀÌ ¾Æ·¡·Î ¶³¾îÁö¸é Àç½ÃÀÛ
+    [Header("Crouch Settings")]
+    public float crouchYOffset = 0.4f;      // ì›…í¬ë¦´ ë•Œ ì¹´ë©”ë¼ê°€ ë‚´ë ¤ê°€ëŠ” ì •ë„
+    public float crouchTransitionSpeed = 10f; // ì¹´ë©”ë¼ ì´ë™ ì†ë„ (ë¶€ë“œëŸ¬ì›€)
 
-    float xRotation = 0f;
-    CharacterController controller;
-    Transform cam;
-    Vector3 velocity;
-    bool isGrounded;
+    [Header("Fall Settings")]
+    public float fallThreshold = -30f; // ë‚™ì‚¬ ë†’ì´
+
+    private CharacterController controller;
+    private Transform cam;
+    private Vector3 velocity;
+    private bool isGrounded;
+
+    private float xRotation = 0f;
+    private float defaultCamY; // ì›ë˜ ì¹´ë©”ë¼ ë†’ì´ ì €ì¥ìš©
 
     void Awake()
     {
         controller = GetComponent<CharacterController>();
+
+        // ì¹´ë©”ë¼ ì°¾ê¸°
         if (cam == null)
         {
             cam = GetComponentInChildren<Camera>()?.transform;
+        }
+
+        // ì‹œì‘í•  ë•Œ ì›ë˜ ì¹´ë©”ë¼ì˜ Y ìœ„ì¹˜ë¥¼ ì €ì¥í•´ë‘¡ë‹ˆë‹¤.
+        if (cam != null)
+        {
+            defaultCamY = cam.localPosition.y;
         }
     }
 
     void Update()
     {
-        // 1. ³«»ç Ã¼Å© (¸Ê ¹ÛÀ¸·Î ¶³¾îÁö¸é Àç½ÃÀÛ)
+        // 1. ë‚™ì‚¬ ì²´í¬
         if (transform.position.y < fallThreshold)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -43,6 +57,7 @@ public class PlayerControoller : MonoBehaviour
 
         HandleMove();
         HandleLook();
+        HandleCrouchView(); // 4. ì¹´ë©”ë¼ ë†’ì´ ì¡°ì ˆ í•¨ìˆ˜ í˜¸ì¶œ
     }
 
     void HandleMove()
@@ -51,40 +66,35 @@ public class PlayerControoller : MonoBehaviour
         if (isGrounded && velocity.y < 0)
             velocity.y = -2f;
 
-        // 2. ¿õÅ©¸®±â(Shift) ÀÔ·Â È®ÀÎ
+        // 2. ì›…í¬ë¦¬ê¸° ì…ë ¥ í™•ì¸
         bool isSneaking = Input.GetKey(KeyCode.LeftShift);
         float currentSpeed = isSneaking ? sneakSpeed : moveSpeed;
 
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
-        // ÀÌµ¿ ¹æÇâ ¹× °Å¸® °è»ê
         Vector3 moveDir = transform.right * h + transform.forward * v;
         Vector3 moveDelta = moveDir * currentSpeed * Time.deltaTime;
 
-        // 3. ¿õÅ©¸®±â ½Ã ³«ÇÏ ¹æÁö (Safe Walk) ·ÎÁ÷
+        // 3. ì›…í¬ë¦¬ê¸° ì‹œ ë‚™í•˜ ë°©ì§€ (Safe Walk)
         if (isSneaking && isGrounded)
         {
-            // °¥·Á°í ÇÏ´Â À§Ä¡(ÇöÀçÀ§Ä¡ + ÀÌµ¿·®) ¾Æ·¡¿¡ ¶¥ÀÌ ÀÖ´ÂÁö Ã¼Å©
             if (!CheckGround(transform.position + moveDelta))
             {
-                // ¶¥ÀÌ ¾ø´Ù¸é(¶³¾îÁö´Â °÷ÀÌ¶ó¸é), XÃà ÀÌµ¿¸¸ ½ÃµµÇØº»´Ù (¸ğ¼­¸® Å¸±â Çã¿ë)
                 Vector3 moveX = transform.right * h * currentSpeed * Time.deltaTime;
                 if (CheckGround(transform.position + moveX))
                 {
-                    moveDelta = moveX; // XÃàÀ¸·Î´Â ÀÌµ¿ °¡´É
+                    moveDelta = moveX;
                 }
                 else
                 {
-                    // ±×°Íµµ ¾ÈµÇ¸é ZÃà ÀÌµ¿¸¸ ½ÃµµÇØº»´Ù
                     Vector3 moveZ = transform.forward * v * currentSpeed * Time.deltaTime;
                     if (CheckGround(transform.position + moveZ))
                     {
-                        moveDelta = moveZ; // ZÃàÀ¸·Î´Â ÀÌµ¿ °¡´É
+                        moveDelta = moveZ;
                     }
                     else
                     {
-                        // µÑ ´Ù ¶³¾îÁö´Â ±æÀÌ¶ó¸é ¾Æ¿¹ ¸ØÃã
                         moveDelta = Vector3.zero;
                     }
                 }
@@ -93,7 +103,7 @@ public class PlayerControoller : MonoBehaviour
 
         controller.Move(moveDelta);
 
-        // Á¡ÇÁ ¹× Áß·Â Ã³¸®
+        // ì í”„ (ì›…í¬ë¦° ìƒíƒœì—ì„œëŠ” ì í”„ ë¶ˆê°€í•˜ê²Œ í•˜ë ¤ë©´ && !isSneaking ì¶”ê°€)
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpPower * -2f * gravity);
@@ -107,20 +117,38 @@ public class PlayerControoller : MonoBehaviour
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+
         transform.Rotate(Vector3.up * mouseX);
+
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -80f, 80f);
+
         if (cam != null)
             cam.localRotation = Quaternion.Euler(xRotation, 0f, 0);
     }
 
-    // ¿õÅ©¸®±â¿ë ¹Ù´Ú Ã¼Å© ÇÔ¼ö
+    // 4. ì¹´ë©”ë¼ ì‹œì  ë†’ì´ ì¡°ì ˆ ë¡œì§
+    void HandleCrouchView()
+    {
+        if (cam == null) return;
+
+        float targetY = defaultCamY; // ê¸°ë³¸ì€ ì›ë˜ ë†’ì´
+
+        // ì‰¬í”„íŠ¸ë¥¼ ëˆ„ë¥´ê³  ìˆìœ¼ë©´ ëª©í‘œ ë†’ì´ë¥¼ ë‚®ì¶¤
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            targetY = defaultCamY - crouchYOffset;
+        }
+
+        // í˜„ì¬ ë†’ì´ì—ì„œ ëª©í‘œ ë†’ì´ê¹Œì§€ ë¶€ë“œëŸ½ê²Œ ì´ë™ (Lerp)
+        float newY = Mathf.Lerp(cam.localPosition.y, targetY, Time.deltaTime * crouchTransitionSpeed);
+
+        // ì¹´ë©”ë¼ ìœ„ì¹˜ ì ìš©
+        cam.localPosition = new Vector3(cam.localPosition.x, newY, cam.localPosition.z);
+    }
+
     bool CheckGround(Vector3 targetPos)
     {
-        // Ä³¸¯ÅÍÀÇ ¹ß À§Ä¡(targetPos)¿¡¼­ ¾Æ·¡·Î ·¹ÀÌÀú¸¦ ½÷¼­ ¶¥ÀÌ ÀÖ´ÂÁö È®ÀÎ
-        // RayOrigin: targetPos¿¡¼­ ¾à°£ À§(0.5f)
-        // Direction: ¾Æ·¡(Vector3.down)
-        // Distance: 1.0f (0.5f À§¿¡¼­ ½î´Ï±î ¹ß ¹Ø 0.5f±îÁö °Ë»ç)
         return Physics.Raycast(targetPos + Vector3.up * 0.5f, Vector3.down, 1.0f);
     }
 }
