@@ -17,8 +17,8 @@ public class NoiseVoxelMap : MonoBehaviour
     public GameObject blockPrefabLeaf;
 
     [Header("Enemy Settings")]
-    public GameObject enemyPrefab;      // [추가됨] 몬스터 프리팹 연결용
-    [Range(0, 1)] public float enemyProbability = 0.02f; // [추가됨] 몬스터 생성 확률 (2%)
+    public GameObject enemyPrefab;
+    [Range(0, 1)] public float enemyProbability = 0.02f; // 몬스터 생성 확률
 
     [Header("Map Settings")]
     public int width = 20;
@@ -63,20 +63,19 @@ public class NoiseVoxelMap : MonoBehaviour
                     // (A) 지표면
                     if (y == h)
                     {
-                        if (y >= waterLevel) // 물 위 (땅)
+                        if (y >= waterLevel) // 물 위
                         {
                             typeToPlace = ItemType.Grass;
                             prefabToUse = blockPrefabGrass;
 
-                            // 1. 나무 심기 시도
+                            // 1. 나무 심기
                             if (Random.value < treeProbability)
                             {
                                 GenerateTree(x, y + 1, z);
                             }
-                            // 2. [추가됨] 몬스터 소환 시도 (나무가 없는 곳에)
+                            // 2. 몬스터 생성 (나무가 안 심긴 곳)
                             else if (enemyPrefab != null && Random.value < enemyProbability)
                             {
-                                // y + 1.5f 높이에 생성하여 땅에 끼이는 것 방지
                                 Instantiate(enemyPrefab, new Vector3(x, y + 1.5f, z), Quaternion.identity, transform);
                             }
                         }
@@ -135,7 +134,7 @@ public class NoiseVoxelMap : MonoBehaviour
     {
         if (prefab == null) return;
 
-        // 맵 범위 체크 해제됨 (무한 확장 지원)
+        // 맵 확장 가능하도록 범위 체크 삭제됨
         // if (x < 0 || x >= width || z < 0 || z >= depth) return;
 
         var go = Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity, transform);
@@ -146,15 +145,12 @@ public class NoiseVoxelMap : MonoBehaviour
 
         b.type = type;
 
+        // 블록 체력 설정
         if (type == ItemType.Stone || type == ItemType.Iron) b.maxHP = 5;
         else if (type == ItemType.Wood) b.maxHP = 4;
         else b.maxHP = 3;
 
-        // 블록 약점 도구 자동 설정 (편의 기능 추가)
-        if (type == ItemType.Stone || type == ItemType.Iron || type == ItemType.Coal)
-            b.effectiveTool = ToolType.Pickaxe;
-        else if (type == ItemType.Wood)
-            b.effectiveTool = ToolType.Axe;
+        // [삭제됨] b.effectiveTool 설정 코드가 삭제되어 오류가 해결됩니다.
     }
 
     public void PlaceTile(Vector3Int pos, ItemType type)
