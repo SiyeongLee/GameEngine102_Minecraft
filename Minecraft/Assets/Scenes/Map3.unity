@@ -1291,6 +1291,7 @@ MonoBehaviour:
   hitMask:
     serializedVersion: 2
     m_Bits: 64
+  toolDamage: 1
   hitCooldown: 0.2
   inventory: {fileID: 980634644}
   inventoryUI: {fileID: 0}
@@ -1975,7 +1976,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a848b57a7a793174baa6c66414085433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextSceneName: Map2
+  nextSceneName: TitleScene
   delayTime: 2
 --- !u!65 &1449076774
 BoxCollider:
