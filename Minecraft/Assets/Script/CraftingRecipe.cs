@@ -19,7 +19,7 @@ public class CraftingRecipe : ScriptableObject
         public int count;
     } // 결과물
 
-    public string displayName;
-    public List<Ingredient> inputs = new();
-    public List<Product> outputs = new();
+    public string displayName; // 레시피 이름 (예: 돌 곡괭이)
+    public List<Ingredient> inputs = new();  // 필요한 재료 목록
+    public List<Product> outputs = new();    // 나오는 결과물 목록
 }

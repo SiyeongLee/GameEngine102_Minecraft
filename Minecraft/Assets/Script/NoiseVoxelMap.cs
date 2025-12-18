@@ -10,11 +10,15 @@ public class NoiseVoxelMap : MonoBehaviour
     public GameObject blockPrefabWater;
 
     [Header("Resource Block Prefabs")]
-    public GameObject blockPrefabStone; // 인스펙터 연결 필수
-    public GameObject blockPrefabCoal;  // 인스펙터 연결 필수
-    public GameObject blockPrefabIron;  // 인스펙터 연결 필수
-    public GameObject blockPrefabWood;  // 인스펙터 연결 필수
-    public GameObject blockPrefabLeaf;  // 인스펙터 연결 필수
+    public GameObject blockPrefabStone;
+    public GameObject blockPrefabCoal;
+    public GameObject blockPrefabIron;
+    public GameObject blockPrefabWood;
+    public GameObject blockPrefabLeaf;
+
+    [Header("Enemy Settings")]
+    public GameObject enemyPrefab;      // [추가됨] 몬스터 프리팹 연결용
+    [Range(0, 1)] public float enemyProbability = 0.02f; // [추가됨] 몬스터 생성 확률 (2%)
 
     [Header("Map Settings")]
     public int width = 20;
@@ -25,7 +29,7 @@ public class NoiseVoxelMap : MonoBehaviour
     [SerializeField] float noiseScale = 20f;
 
     [Header("Generation Rates")]
-    [Range(0, 1)] public float treeProbability = 0.05f; // 나무 생성 확률 5%
+    [Range(0, 1)] public float treeProbability = 0.05f;
 
     private float offsetX;
     private float offsetZ;
@@ -37,7 +41,6 @@ public class NoiseVoxelMap : MonoBehaviour
 
     void GenerateMap()
     {
-        // 매번 다른 지형을 만들기 위한 랜덤 오프셋
         offsetX = Random.Range(-9999f, 9999f);
         offsetZ = Random.Range(-9999f, 9999f);
 
@@ -45,7 +48,6 @@ public class NoiseVoxelMap : MonoBehaviour
         {
             for (int z = 0; z < depth; z++)
             {
-                // 1. 펄린 노이즈로 높이 계산
                 float nx = (x + offsetX) / noiseScale;
                 float nz = (z + offsetZ) / noiseScale;
                 float noise = Mathf.PerlinNoise(nx, nz);
@@ -53,56 +55,48 @@ public class NoiseVoxelMap : MonoBehaviour
 
                 if (h < 1) h = 1;
 
-                // 2. 바닥부터 높이 h까지 블록 쌓기
                 for (int y = 0; y <= h; y++)
                 {
                     ItemType typeToPlace = ItemType.Dirt;
                     GameObject prefabToUse = blockPrefabDirt;
 
-                    // (A) 맨 위층 (지표면)
+                    // (A) 지표면
                     if (y == h)
                     {
-                        if (y >= waterLevel) // 물 위라면 잔디
+                        if (y >= waterLevel) // 물 위 (땅)
                         {
                             typeToPlace = ItemType.Grass;
                             prefabToUse = blockPrefabGrass;
 
-                            // 지표면 위에 나무 심기 시도
+                            // 1. 나무 심기 시도
                             if (Random.value < treeProbability)
                             {
                                 GenerateTree(x, y + 1, z);
                             }
+                            // 2. [추가됨] 몬스터 소환 시도 (나무가 없는 곳에)
+                            else if (enemyPrefab != null && Random.value < enemyProbability)
+                            {
+                                // y + 1.5f 높이에 생성하여 땅에 끼이는 것 방지
+                                Instantiate(enemyPrefab, new Vector3(x, y + 1.5f, z), Quaternion.identity, transform);
+                            }
                         }
-                        else // 물 밑이라면 흙(또는 모래)
+                        else // 물 밑
                         {
                             typeToPlace = ItemType.Dirt;
                             prefabToUse = blockPrefabDirt;
                         }
                     }
-                    // (B) 지하 (광물 생성)
+                    // (B) 지하
                     else
                     {
-                        // 지표면보다 3칸 이상 깊은 곳부터 광물 등장
                         if (h - y > 3)
                         {
                             float val = Random.value;
-                            if (val < 0.05f) // 5% 확률로 철
-                            {
-                                typeToPlace = ItemType.Iron;
-                                prefabToUse = blockPrefabIron;
-                            }
-                            else if (val < 0.15f) // 10% 확률로 석탄
-                            {
-                                typeToPlace = ItemType.Coal;
-                                prefabToUse = blockPrefabCoal;
-                            }
-                            else // 나머지는 돌
-                            {
-                                typeToPlace = ItemType.Stone;
-                                prefabToUse = blockPrefabStone;
-                            }
+                            if (val < 0.05f) { typeToPlace = ItemType.Iron; prefabToUse = blockPrefabIron; }
+                            else if (val < 0.15f) { typeToPlace = ItemType.Coal; prefabToUse = blockPrefabCoal; }
+                            else { typeToPlace = ItemType.Stone; prefabToUse = blockPrefabStone; }
                         }
-                        else // 지표면 바로 아래는 그냥 흙
+                        else
                         {
                             typeToPlace = ItemType.Dirt;
                             prefabToUse = blockPrefabDirt;
@@ -112,7 +106,7 @@ public class NoiseVoxelMap : MonoBehaviour
                     CreateBlock(x, y, z, prefabToUse, typeToPlace);
                 }
 
-                // 3. 물 채우기
+                // 물 채우기
                 for (int y = h + 1; y < waterLevel; y++)
                 {
                     CreateBlock(x, y, z, blockPrefabWater, ItemType.Water);
@@ -123,14 +117,12 @@ public class NoiseVoxelMap : MonoBehaviour
 
     void GenerateTree(int x, int y, int z)
     {
-        // 나무 기둥 (높이 3~5칸 랜덤)
         int height = Random.Range(3, 6);
         for (int i = 0; i < height; i++)
         {
             CreateBlock(x, y + i, z, blockPrefabWood, ItemType.Wood);
         }
 
-        // 나뭇잎 (기둥 꼭대기 주변)
         int topY = y + height;
         CreateBlock(x, topY, z, blockPrefabLeaf, ItemType.Leaf);
         CreateBlock(x + 1, topY - 1, z, blockPrefabLeaf, ItemType.Leaf);
@@ -139,12 +131,11 @@ public class NoiseVoxelMap : MonoBehaviour
         CreateBlock(x, topY - 1, z - 1, blockPrefabLeaf, ItemType.Leaf);
     }
 
-    // 블록 생성 헬퍼 함수
     void CreateBlock(int x, int y, int z, GameObject prefab, ItemType type)
     {
         if (prefab == null) return;
 
-        // 맵 범위 체크 코드 삭제 또는 주석 처리 (//)
+        // 맵 범위 체크 해제됨 (무한 확장 지원)
         // if (x < 0 || x >= width || z < 0 || z >= depth) return;
 
         var go = Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity, transform);
@@ -155,23 +146,31 @@ public class NoiseVoxelMap : MonoBehaviour
 
         b.type = type;
 
-        // 블록 타입별 체력 설정 (옵션)
         if (type == ItemType.Stone || type == ItemType.Iron) b.maxHP = 5;
         else if (type == ItemType.Wood) b.maxHP = 4;
         else b.maxHP = 3;
+
+        // 블록 약점 도구 자동 설정 (편의 기능 추가)
+        if (type == ItemType.Stone || type == ItemType.Iron || type == ItemType.Coal)
+            b.effectiveTool = ToolType.Pickaxe;
+        else if (type == ItemType.Wood)
+            b.effectiveTool = ToolType.Axe;
     }
 
-    // PlayerHarvester 등 외부에서 블록 설치 시 호출하는 함수
     public void PlaceTile(Vector3Int pos, ItemType type)
     {
         GameObject prefab = blockPrefabDirt;
         switch (type)
         {
+            case ItemType.Dirt: prefab = blockPrefabDirt; break;
             case ItemType.Grass: prefab = blockPrefabGrass; break;
             case ItemType.Water: prefab = blockPrefabWater; break;
             case ItemType.Stone: prefab = blockPrefabStone; break;
             case ItemType.Wood: prefab = blockPrefabWood; break;
-                // 필요한 경우 다른 타입도 추가
+            case ItemType.Leaf: prefab = blockPrefabLeaf; break;
+            case ItemType.Coal: prefab = blockPrefabCoal; break;
+            case ItemType.Iron: prefab = blockPrefabIron; break;
+            default: prefab = blockPrefabDirt; break;
         }
         CreateBlock(pos.x, pos.y, pos.z, prefab, type);
     }

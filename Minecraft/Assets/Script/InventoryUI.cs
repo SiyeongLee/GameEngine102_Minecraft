@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,7 +15,6 @@ public class InventoryUI : MonoBehaviour
     public Sprite CoalSprite;
     public Sprite IronSprite;
     public Sprite AxeSprite;
-   
     #endregion
 
     public List<Transform> SlotItems = new List<Transform>();
@@ -27,6 +25,7 @@ public class InventoryUI : MonoBehaviour
 
     public void UpdateInventory(Inventory myInven)
     {
+        // 기존 아이템 오브젝트 삭제
         foreach (var slotItems in Items)
         {
             Destroy(slotItems);
@@ -37,6 +36,9 @@ public class InventoryUI : MonoBehaviour
         foreach (var item in myInven.items)
         {
             #region 슬롯 아이템 인스턴스 생성 및 설정
+            // 인덱스가 슬롯 개수를 넘어가면 중단 (안전장치)
+            if (idx >= SlotItems.Count) break;
+
             var go = Instantiate(SlotItem, SlotItems[idx].transform);
             go.transform.localPosition = Vector3.zero;
             SlotItemPrefab slotItem = go.GetComponent<SlotItemPrefab>();
@@ -75,11 +77,25 @@ public class InventoryUI : MonoBehaviour
             }
             idx++;
         }
+
+        // [오류 수정 핵심] 아이템 목록이 갱신된 후, 선택된 인덱스가 범위를 벗어났는지 확인
+        if (selectedIndex >= Items.Count)
+        {
+            selectedIndex = -1; // 선택 해제
+        }
+
+        // 선택 표시 UI 갱신 (선택된 게 있을 때만)
+        ResetSelection();
+        if (selectedIndex >= 0 && selectedIndex < Items.Count)
+        {
+            SetSelection(selectedIndex);
+        }
     }
 
     private void Update()
     {
-        for (int i = 0; i < Mathf.Min(9, SlotItems.Count); i++)
+        // Items.Count 범위 내에서만 키 입력 받도록 수정
+        for (int i = 0; i < Mathf.Min(9, Items.Count); i++)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1 + i))
             {
@@ -114,17 +130,26 @@ public class InventoryUI : MonoBehaviour
     {
         foreach (var slot in SlotItems)
         {
-            slot.GetComponent<Image>().color = Color.white;
+            if (slot != null && slot.GetComponent<Image>() != null)
+                slot.GetComponent<Image>().color = Color.white;
         }
     }
 
     public void SetSelection(int _idx)
     {
-        SlotItems[_idx].GetComponent<Image>().color = Color.yellow;
+        if (_idx >= 0 && _idx < SlotItems.Count)
+        {
+            SlotItems[_idx].GetComponent<Image>().color = Color.yellow;
+        }
     }
 
     public ItemType GetInventorySlot()
     {
+        // [안전장치 추가] 인덱스가 범위를 벗어나면 기본값 반환
+        if (selectedIndex < 0 || selectedIndex >= Items.Count)
+        {
+            return ItemType.Dirt;
+        }
         return Items[selectedIndex].GetComponent<SlotItemPrefab>().blockType;
     }
 }
